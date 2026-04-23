@@ -2,7 +2,7 @@
   "mcpServers": {
     "google-analytics": {
       "command": "google-analytics-mcp",
-      "args": ["--property-id", "YOUR_GA4_PROPERTY_ID"]
+      "args": ["--property-id", "335700989"]
     }
   }
 }
