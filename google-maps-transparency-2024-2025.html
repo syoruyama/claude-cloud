@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Maps 透明性レポート比較 2024 vs 2025</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', 'Yu Gothic', sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      padding: 32px 16px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #2d3748;
+    }
+    .subtitle {
+      text-align: center;
+      color: #718096;
+      font-size: 0.9rem;
+      margin-bottom: 40px;
+    }
+
+    /* ===== SUMMARY CARDS ===== */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      max-width: 960px;
+      margin: 0 auto 48px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .card-icon { font-size: 2rem; margin-bottom: 8px; }
+    .card-title { font-size: 0.85rem; color: #718096; margin-bottom: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+    .card-values { display: flex; gap: 16px; align-items: flex-end; }
+    .card-year { flex: 1; }
+    .card-year-label { font-size: 0.75rem; font-weight: 700; border-radius: 4px; padding: 2px 6px; display: inline-block; margin-bottom: 4px; }
+    .y2024 .card-year-label { background: #bee3f8; color: #2b6cb0; }
+    .y2025 .card-year-label { background: #c6f6d5; color: #276749; }
+    .card-number { font-size: 1.5rem; font-weight: 800; line-height: 1.1; }
+    .card-unit { font-size: 0.75rem; color: #718096; margin-top: 2px; }
+    .badge {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin-top: 8px;
+    }
+    .badge-up { background: #fed7d7; color: #c53030; }
+    .badge-down { background: #c6f6d5; color: #276749; }
+
+    /* ===== BAR CHART ===== */
+    .chart-section {
+      max-width: 960px;
+      margin: 0 auto 48px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .chart-section h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 28px;
+      color: #2d3748;
+    }
+    .bar-group { margin-bottom: 28px; }
+    .bar-label { font-size: 0.85rem; font-weight: 600; color: #4a5568; margin-bottom: 8px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .bar-tag { width: 48px; font-size: 0.72rem; font-weight: 700; text-align: center; border-radius: 4px; padding: 2px 4px; flex-shrink: 0; }
+    .tag-2024 { background: #bee3f8; color: #2b6cb0; }
+    .tag-2025 { background: #c6f6d5; color: #276749; }
+    .bar-track { flex: 1; background: #edf2f7; border-radius: 999px; height: 22px; overflow: hidden; }
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      padding-right: 8px;
+      justify-content: flex-end;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      transition: width 1s ease;
+    }
+    .fill-2024 { background: linear-gradient(90deg, #4299e1, #2b6cb0); }
+    .fill-2025 { background: linear-gradient(90deg, #48bb78, #276749); }
+
+    /* ===== FLOW CHART ===== */
+    .flow-section {
+      max-width: 960px;
+      margin: 0 auto 48px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .flow-section h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 28px; color: #2d3748; }
+    .flow-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    @media (max-width: 600px) { .flow-grid { grid-template-columns: 1fr; } }
+    .flow-col h3 { font-size: 0.95rem; font-weight: 700; text-align: center; border-radius: 8px; padding: 8px; margin-bottom: 16px; }
+    .flow-col-2024 h3 { background: #ebf8ff; color: #2b6cb0; }
+    .flow-col-2025 h3 { background: #f0fff4; color: #276749; }
+    .flow-item {
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .flow-item-2024 { background: #ebf8ff; border-left: 4px solid #4299e1; }
+    .flow-item-2025 { background: #f0fff4; border-left: 4px solid #48bb78; }
+    .flow-item-label { font-size: 0.78rem; color: #718096; font-weight: 600; }
+    .flow-item-value { font-size: 1.2rem; font-weight: 800; margin-top: 2px; }
+    .flow-item-value-2024 { color: #2b6cb0; }
+    .flow-item-value-2025 { color: #276749; }
+
+    /* ===== CHANGE TABLE ===== */
+    .table-section {
+      max-width: 960px;
+      margin: 0 auto 48px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .table-section h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; color: #2d3748; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    thead th {
+      background: #f7fafc;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.8rem;
+      color: #718096;
+      font-weight: 700;
+      border-bottom: 2px solid #e2e8f0;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    tbody td { padding: 12px 14px; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    .change-up { color: #e53e3e; font-weight: 700; }
+    .change-down { color: #38a169; font-weight: 700; }
+
+    .footer { text-align: center; font-size: 0.78rem; color: #a0aec0; margin-top: 16px; }
+    .legend { display: flex; gap: 16px; justify-content: center; margin-bottom: 20px; font-size: 0.82rem; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+    .dot-2024 { background: #4299e1; }
+    .dot-2025 { background: #48bb78; }
+  </style>
+</head>
+<body>
+
+<h1>Google マップ コンテンツ信頼性・安全性レポート</h1>
+<p class="subtitle">2024年 vs 2025年 比較</p>
+
+<!-- ===== SUMMARY CARDS ===== -->
+<div class="cards">
+
+  <div class="card">
+    <div class="card-icon">⭐</div>
+    <div class="card-title">違反クチコミのブロック・削除</div>
+    <div class="card-values">
+      <div class="card-year y2024">
+        <span class="card-year-label">2024</span>
+        <div class="card-number">2億4,000万+</div>
+        <div class="card-unit">件</div>
+      </div>
+      <div class="card-year y2025">
+        <span class="card-year-label">2025</span>
+        <div class="card-number">2億9,200万+</div>
+        <div class="card-unit">件</div>
+      </div>
+    </div>
+    <span class="badge badge-up">▲ +21.7%</span>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">✏️</div>
+    <div class="card-title">不正確・未確認の修正提案ブロック</div>
+    <div class="card-values">
+      <div class="card-year y2024">
+        <span class="card-year-label">2024</span>
+        <div class="card-number">7,000万+</div>
+        <div class="card-unit">件</div>
+      </div>
+      <div class="card-year y2025">
+        <span class="card-year-label">2025</span>
+        <div class="card-number">7,900万+</div>
+        <div class="card-unit">件</div>
+      </div>
+    </div>
+    <span class="badge badge-up">▲ +12.9%</span>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">🏢</div>
+    <div class="card-title">偽のビジネスプロフィール削除</div>
+    <div class="card-values">
+      <div class="card-year y2024">
+        <span class="card-year-label">2024</span>
+        <div class="card-number">1,200万+</div>
+        <div class="card-unit">件</div>
+      </div>
+      <div class="card-year y2025">
+        <span class="card-year-label">2025</span>
+        <div class="card-number">1,300万+</div>
+        <div class="card-unit">件</div>
+      </div>
+    </div>
+    <span class="badge badge-up">▲ +8.3%</span>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">👤</div>
+    <div class="card-title">アカウントへの投稿制限</div>
+    <div class="card-values">
+      <div class="card-year y2024">
+        <span class="card-year-label">2024</span>
+        <div class="card-number">90万+</div>
+        <div class="card-unit">件</div>
+      </div>
+      <div class="card-year y2025">
+        <span class="card-year-label">2025</span>
+        <div class="card-number">78万2,000+</div>
+        <div class="card-unit">件</div>
+      </div>
+    </div>
+    <span class="badge badge-down">▼ −13.1%</span>
+  </div>
+
+</div>
+
+<!-- ===== BAR CHART ===== -->
+<div class="chart-section">
+  <h2>カテゴリー別 件数比較（棒グラフ）</h2>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-2024"></div>2024年</div>
+    <div class="legend-item"><div class="legend-dot dot-2025"></div>2025年</div>
+  </div>
+
+  <!-- 違反クチコミ: max=292M → 100% -->
+  <div class="bar-group">
+    <div class="bar-label">⭐ 違反クチコミのブロック・削除</div>
+    <div class="bar-row">
+      <span class="bar-tag tag-2024">2024</span>
+      <div class="bar-track">
+        <div class="bar-fill fill-2024" style="width:82.2%">2億4,000万</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-tag tag-2025">2025</span>
+      <div class="bar-track">
+        <div class="bar-fill fill-2025" style="width:100%">2億9,200万</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 修正提案: max=79M → 100% -->
+  <div class="bar-group">
+    <div class="bar-label">✏️ 不正確・未確認の修正提案ブロック</div>
+    <div class="bar-row">
+      <span class="bar-tag tag-2024">2024</span>
+      <div class="bar-track">
+        <div class="bar-fill fill-2024" style="width:88.6%">7,000万</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-tag tag-2025">2025</span>
+      <div class="bar-track">
+        <div class="bar-fill fill-2025" style="width:100%">7,900万</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 偽プロフィール: max=13M → 100% -->
+  <div class="bar-group">
+    <div class="bar-label">🏢 偽のビジネスプロフィール削除</div>
+    <div class="bar-row">
+      <span class="bar-tag tag-2024">2024</span>
+      <div class="bar-track">
+        <div class="bar-fill fill-2024" style="width:92.3%">1,200万</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-tag tag-2025">2025</span>
+      <div class="bar-track">
+        <div class="bar-fill fill-2025" style="width:100%">1,300万</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- アカウント制限: max=90万 → 100% -->
+  <div class="bar-group">
+    <div class="bar-label">👤 アカウントへの投稿制限</div>
+    <div class="bar-row">
+      <span class="bar-tag tag-2024">2024</span>
+      <div class="bar-track">
+        <div class="bar-fill fill-2024" style="width:100%">90万</div>
+      </div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-tag tag-2025">2025</span>
+      <div class="bar-track">
+        <div class="bar-fill fill-2025" style="width:86.9%">78.2万</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SIDE BY SIDE ===== -->
+<div class="flow-section">
+  <h2>年別サマリー</h2>
+  <div class="flow-grid">
+    <div class="flow-col flow-col-2024">
+      <h3>2024年</h3>
+      <div class="flow-item flow-item-2024">
+        <div class="flow-item-label">⭐ 違反クチコミ削除</div>
+        <div class="flow-item-value flow-item-value-2024">2億4,000万件以上</div>
+      </div>
+      <div class="flow-item flow-item-2024">
+        <div class="flow-item-label">✏️ 違反編集のブロック</div>
+        <div class="flow-item-value flow-item-value-2024">7,000万件以上</div>
+      </div>
+      <div class="flow-item flow-item-2024">
+        <div class="flow-item-label">🏢 偽ビジネスプロフィール削除</div>
+        <div class="flow-item-value flow-item-value-2024">1,200万件以上</div>
+      </div>
+      <div class="flow-item flow-item-2024">
+        <div class="flow-item-label">👤 アカウントへの投稿制限</div>
+        <div class="flow-item-value flow-item-value-2024">90万件以上</div>
+      </div>
+    </div>
+    <div class="flow-col flow-col-2025">
+      <h3>2025年</h3>
+      <div class="flow-item flow-item-2025">
+        <div class="flow-item-label">⭐ 違反クチコミ削除</div>
+        <div class="flow-item-value flow-item-value-2025">2億9,200万件以上</div>
+      </div>
+      <div class="flow-item flow-item-2025">
+        <div class="flow-item-label">✏️ 不正確・未確認の修正提案ブロック</div>
+        <div class="flow-item-value flow-item-value-2025">7,900万件以上</div>
+      </div>
+      <div class="flow-item flow-item-2025">
+        <div class="flow-item-label">🏢 偽ビジネスプロフィール削除</div>
+        <div class="flow-item-value flow-item-value-2025">1,300万件以上</div>
+      </div>
+      <div class="flow-item flow-item-2025">
+        <div class="flow-item-label">👤 アカウントへの投稿制限</div>
+        <div class="flow-item-value flow-item-value-2025">78.2万件以上</div>
+      </div>
+      <div class="flow-item flow-item-2025">
+        <div class="flow-item-label">✅ 有益なクチコミの公開支援</div>
+        <div class="flow-item-value flow-item-value-2025">10億件以上</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TABLE ===== -->
+<div class="table-section">
+  <h2>増減まとめ</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>カテゴリー</th>
+        <th>2024年</th>
+        <th>2025年</th>
+        <th>変化率</th>
+        <th>評価</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>⭐ 違反クチコミのブロック・削除</td>
+        <td>2億4,000万件+</td>
+        <td>2億9,200万件+</td>
+        <td class="change-up">▲ +21.7%</td>
+        <td>スパム対策強化</td>
+      </tr>
+      <tr>
+        <td>✏️ 不正確・未確認の修正提案ブロック</td>
+        <td>7,000万件+</td>
+        <td>7,900万件+</td>
+        <td class="change-up">▲ +12.9%</td>
+        <td>情報精度向上</td>
+      </tr>
+      <tr>
+        <td>🏢 偽のビジネスプロフィール削除</td>
+        <td>1,200万件+</td>
+        <td>1,300万件+</td>
+        <td class="change-up">▲ +8.3%</td>
+        <td>偽業者排除強化</td>
+      </tr>
+      <tr>
+        <td>👤 アカウントへの投稿制限</td>
+        <td>90万件+</td>
+        <td>78.2万件+</td>
+        <td class="change-down">▼ −13.1%</td>
+        <td>予防検知が向上？</td>
+      </tr>
+      <tr>
+        <td>✅ 有益クチコミの公開支援（2025年新指標）</td>
+        <td>—</td>
+        <td>10億件+</td>
+        <td>—</td>
+        <td>新規開示項目</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p class="footer">
+  出典: <a href="https://transparencyreport.google.com/maps-content/overview?hl=ja" target="_blank">Google マップ コンテンツの信頼性と安全性に関するレポート</a> &nbsp;|&nbsp; 作成日: 2026年4月
+</p>
+
+</body>
+</html>
